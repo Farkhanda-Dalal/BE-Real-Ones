@@ -4,12 +4,9 @@ import { FaFingerprint, FaUser } from "react-icons/fa";
 import VerdictPopup from "./VerdictPopup";
 
 const LoginPage = ({ onNavigate }) => {
-  // State for inputs
   const [name, setName] = useState("");
   const [aadhar, setAadhar] = useState("");
-  
-  // --- 1. NEW: THE HONEYPOT STATE ---
-  const [honeyPot, setHoneyPot] = useState(""); 
+  const [honeyPot, setHoneyPot] = useState(""); // The existing Honeypot state
   
   const [isLoading, setIsLoading] = useState(false);
   const [verdict, setVerdict] = useState(null);
@@ -27,27 +24,60 @@ const LoginPage = ({ onNavigate }) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // --- HONEY POT TRAP---
-    // If the hidden field has ANY text, it is 100% a bot.
+    // 1. HONEYPOT CHECK (Existing)
     if (honeyPot.length > 0) {
         console.warn("🍯 HONEYPOT TRIGGERED! Bot caught.");
-        
-        // Simulate a short delay to make it feel real
+        setTimeout(() => {
+            setVerdict({
+                is_bot: true, confidence_score: 100.0,
+                features_calculated: { efficiency: 1.0, curvature: 0.0, note: "Honeypot Triggered" }
+            });
+            setIsLoading(false);
+        }, 500);
+        return;
+    }
+
+    // --- 2. NEW: GHOST WINDOW CHECK (Screen Resolution) ---
+    // Rule: Headless bots often have 0 width/height OR use default 800x600 which might mismatch the screen.
+    // We check if the outer window is 0 (impossible for humans)
+    const isHeadless = window.outerWidth === 0 || window.outerHeight === 0;
+    
+    if (isHeadless) {
+        console.warn("👻 GHOST WINDOW DETECTED! Zero dimensions.");
         setTimeout(() => {
             setVerdict({
                 is_bot: true,
-                confidence_score: 100.0, // Maximum Confidence
+                confidence_score: 100.0,
                 features_calculated: { 
-                    efficiency: 1.0, 
-                    curvature: 0.0, 
-                    note: "Honeypot Trap Triggered" 
+                    efficiency: 1.0, curvature: 0.0, 
+                    note: "Headless Browser (Ghost Window)" 
                 }
             });
             setIsLoading(false);
         }, 500);
-        return; // STOP EXECUTION HERE. Do not call backend.
+        return; 
     }
 
+    // --- 3. NEW: VAMPIRE CHECK (Tab Visibility) ---
+    // Rule: Humans cannot click 'Login' if they cannot see the page.
+    // If the document is 'hidden' at the moment of submission, it's a script running in background.
+    if (document.visibilityState === 'hidden') {
+        console.warn("🧛 VAMPIRE CHECK DETECTED! Input from hidden tab.");
+        setTimeout(() => {
+            setVerdict({
+                is_bot: true,
+                confidence_score: 100.0,
+                features_calculated: { 
+                    efficiency: 1.0, curvature: 0.0, 
+                    note: "Background Script (Vampire)" 
+                }
+            });
+            setIsLoading(false);
+        }, 500);
+        return;
+    }
+
+    // 4. PROCEED TO MODEL (Only if they passed Honeypot, Ghost, and Vampire)
     const payload = getPayload();
 
     try {
@@ -75,18 +105,13 @@ const LoginPage = ({ onNavigate }) => {
 
           <div className="p-8">
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                Welcome to myAadhaar
-              </h2>
-              <p className="text-gray-500 text-sm">
-                Login with Name and Aadhaar to access services
-              </p>
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome to myAadhaar</h2>
+              <p className="text-gray-500 text-sm">Login with Name and Aadhaar to access services</p>
             </div>
 
             <form onSubmit={handleLogin} className="space-y-6">
               
-              {/* --- 3. NEW: THE INVISIBLE FIELD (The Bait) --- */}
-              {/* Opacity 0 makes it invisible. -z-10 puts it behind the card. */}
+              {/* HONEYPOT FIELD (The Bait) */}
               <div className="absolute opacity-0 -z-10 h-0 w-0 overflow-hidden">
                 <label htmlFor="middle_name">Middle Name (Optional)</label>
                 <input
@@ -103,9 +128,7 @@ const LoginPage = ({ onNavigate }) => {
 
               {/* Name Input */}
               <div className="relative">
-                <label className="block text-sm font-semibold text-gray-700 mb-1 ml-1">
-                  Full Name
-                </label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1 ml-1">Full Name</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <FaUser className="text-gray-400" />
@@ -122,9 +145,7 @@ const LoginPage = ({ onNavigate }) => {
 
               {/* Aadhaar Input */}
               <div className="relative">
-                <label className="block text-sm font-semibold text-gray-700 mb-1 ml-1">
-                  Aadhaar Number
-                </label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1 ml-1">Aadhaar Number</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <FaFingerprint className="text-brand-green text-lg" />
@@ -156,15 +177,13 @@ const LoginPage = ({ onNavigate }) => {
             </form>
 
             <div className="mt-6 text-center">
-              <a href="#" className="text-sm text-brand-green font-semibold hover:underline">
-                Forgot Aadhaar Number?
-              </a>
+              <a href="#" className="text-sm text-brand-green font-semibold hover:underline">Forgot Aadhaar Number?</a>
             </div>
           </div>
         </div>
       </main>
 
-      {/* 2. Verdict Popup Component */}
+      {/* Verdict Popup */}
       {verdict && (
         <VerdictPopup 
             result={verdict} 
@@ -174,7 +193,6 @@ const LoginPage = ({ onNavigate }) => {
             }} 
         />
       )}
-      
     </div>
   );
 };
