@@ -79,6 +79,43 @@ If a user passes all above checks, their behavioral data is sent to the Random F
 
 ---
 
+## 🚦 Decision Logic & Fallback Mechanisms
+
+RealOnes does not deal in absolutes. Instead of a simple "Yes/No," the Random Forest model outputs a **Confidence Score (0-100%)** representing the probability of the user being a bot.
+
+To ensure genuine users are never locked out, the system uses a **Tri-State Threshold Logic**:
+
+### 1. The Safety Zone (Score: 0% - 30%)
+
+* **Verdict:** `HUMAN`
+* **Action:** **Login Successful.**
+* **Logic:** The user showed high entropy in mouse movements, variable typing speeds, and passed all physical environment checks.
+
+### 2. The Suspicious Zone (Score: 30% - 75%)
+
+* **Verdict:** `SUSPICIOUS`
+* **Action:** **Redirect to Fallback (CAPTCHA).**
+* **Logic:** The user acted strangely (e.g., very straight mouse lines but human-like typing). The model is unsure.
+* **The Fallback:** Instead of blocking, we redirect them to `/captcha`. If they solve it, we mark the session as Valid and let them proceed. This "Human-in-the-loop" verification fixes model errors.
+
+### 3. The Danger Zone (Score: 75% - 100%)
+
+* **Verdict:** `BOT`
+* **Action:** **Immediate Block.**
+* **Logic:** The user exhibited clear robotic traits (0ms reaction time, perfect efficiency, or failed a Layer 1 Trap like the Honeypot).
+
+---
+
+### 🛡️ Why This Architecture?
+
+| Feature | Traditional WAF | BioGuard (Ours) |
+| --- | --- | --- |
+| **False Positives** | High (Blocks innocent users) | **Zero** (Redirects to Captcha instead of blocking) |
+| **User Experience** | Annoying (Captcha for everyone) | **Seamless** (Captcha *only* for suspicious users) |
+| **Bot Detection** | IP-based (Easy to spoof) | **Behavioral** (Hard to mimic) |
+
+---
+
 ## 🤖 Bot Taxonomy (The "Zoo")
 
 This project includes a suite of attack scripts to test the defense layers.
