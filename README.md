@@ -7,6 +7,27 @@
 It leverages **Behavioral Biometrics** (Mouse Dynamics & Keystroke Rhythm) combined with **Environmental Fingerprinting** to create a "Defense-in-Depth" architecture. The system includes a real-time **Security Operations Center (SOC) Dashboard** for monitoring threats.
 
 ---
+## Snapshots
+#### Human Interaction
+<img src="https://github.com/Farkhanda-Dalal/BE-Real-Ones/blob/main/Images/Human1.png" alt="Security Ops Center">
+<img src="https://github.com/Farkhanda-Dalal/BE-Real-Ones/blob/main/Images/Human2.png" alt="Security Ops Center">
+<img src="https://github.com/Farkhanda-Dalal/BE-Real-Ones/blob/main/Images/Human3.png" alt="Security Ops Center">
+
+#### Bot Detection
+<img src="https://github.com/Farkhanda-Dalal/BE-Real-Ones/blob/main/Images/BotDetected.png" alt="Security Ops Center">
+
+#### Fallback
+<img src="https://github.com/Farkhanda-Dalal/BE-Real-Ones/blob/main/Images/Fallback1.png" alt="Security Ops Center">
+<img src="https://github.com/Farkhanda-Dalal/BE-Real-Ones/blob/main/Images/Fallback2.png" alt="Security Ops Center">
+
+#### Admin Dashboard
+<img src="https://github.com/Farkhanda-Dalal/BE-Real-Ones/blob/main/Images/Dashboard1.png" alt="Security Ops Center">
+<img src="https://github.com/Farkhanda-Dalal/BE-Real-Ones/blob/main/Images/Dashboard2.png" alt="Security Ops Center">
+
+
+
+
+---
 
 ## 🏗 Project Architecture
 
